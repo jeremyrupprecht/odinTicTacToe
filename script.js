@@ -14,9 +14,7 @@ const controller = (function() {
         }
         const placeTile = (player, x, y) => {
             
-        }
-
-
+        };
     })();
     
     const player = (tileType) => {
@@ -28,7 +26,7 @@ const controller = (function() {
     }
 
     const playRound = () => {
-        // ....
+        
     }
     
     const play = () => {
@@ -36,7 +34,17 @@ const controller = (function() {
 
         // }
     }
-    
+
+    // gameboard object already exists...
+    const player1 = player("X");
+    const player2 = player("O");
+    let ties = 0;
+    let turn = "X";
+    let gameOver = {
+        over: false,
+        winner: "none",
+    }
+
     return {play}
 })();
 controller.play();
