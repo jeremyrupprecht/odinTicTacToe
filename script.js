@@ -3,7 +3,7 @@ const player = (tileType) => {
     const getScore = () => score;
     const incrementScore = () => score++;
     const getTileType = () => tileType;
-    return {getScore, incrementScore, getTileType}
+    return {getScore, incrementScore, getTileType};
 }
 
 const gameBoard = (function() {
@@ -32,46 +32,17 @@ const gameBoard = (function() {
         // If there's already a tile there, don't replace it, return immediately
         if (gameBoard[x][y]) {
             console.log("NOPE");
-            return
+            return;
         }
         gameBoard[x][y] = `${player.getTileType()}`;
         printBoard();
-        checkGameOver(x, y, player);
     };
 
-    const checkGameOver = (x, y, player) => {
-        // A win can only happen at the current move so check the current row, col
-        // and diagonal (both ways) for the a win
-        let tileType = player.getTileType();
-        let rowsNeededToWin = 0;
-        let colsNeededToWin = 0;
-        let diagsNeededToWin = 0;
-        let reverseDiagsNeededToWin = 0;
-        let boardLength = gameBoard.length;
-        for (let i = 0; i < boardLength; i++) {
-            if (gameBoard[x][i] == tileType) rowsNeededToWin++;
-            if (gameBoard[i][y] == tileType) colsNeededToWin++;
-            if (gameBoard[i][i] == tileType) diagsNeededToWin++;
-            if (gameBoard[i][boardLength - 1 - i] == tileType) reverseDiagsNeededToWin++;
-            console.log(`i ${i}`);
-            
-        }
-        console.log(reverseDiagsNeededToWin);
-        if (rowsNeededToWin == boardLength ||
-            colsNeededToWin == boardLength || 
-            diagsNeededToWin == boardLength ||
-            reverseDiagsNeededToWin == boardLength) {
-                console.log(`Player ${tileType} Wins!`);
-                player.incrementScore();
-        }
+    const resetBoard = () => {
 
     };
 
-    const reset = () => {
-
-    };
-
-    return {getBoard, placeTile, printBoard, checkGameOver, reset}
+    return {getBoard, placeTile, printBoard, resetBoard}
 })();
 
 const controller = (function() {
@@ -92,12 +63,40 @@ const controller = (function() {
         activePlayer = activePlayer === player1 ? player2 : player1;
     }
 
+    const checkGameOver = (board, x, y, player) => {
+        // A win can only happen at the current move so check the current row, col
+        // and diagonal (both ways) for the a win
+        let tileType = player.getTileType();
+        let rowsNeededToWin = 0;
+        let colsNeededToWin = 0;
+        let diagsNeededToWin = 0;
+        let reverseDiagsNeededToWin = 0;
+        let boardLength = board.length;
+        for (let i = 0; i < boardLength; i++) {
+            if (board[x][i] == tileType) rowsNeededToWin++;
+            if (board[i][y] == tileType) colsNeededToWin++;
+            if (board[i][i] == tileType) diagsNeededToWin++;
+            if (board[i][boardLength - 1 - i] == tileType) reverseDiagsNeededToWin++;
+        }
+        if (rowsNeededToWin == boardLength ||
+            colsNeededToWin == boardLength || 
+            diagsNeededToWin == boardLength ||
+            reverseDiagsNeededToWin == boardLength) {
+                console.log(`Player ${tileType} Wins!`);
+                player.incrementScore();
+                return {over: true, winner: player};
+        }
+        return {over: false, winner: "none"};
+    };
+
     const playRound = () => {
         console.log("Round Start!");
         let input = prompt("Enter in (zero-indexed) tile coordinates (x y):").split(" ");
         let x = input[0];
         let y = input[1];
         gameBoard.placeTile(getActivePlayer(), x, y);
+        gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
+        console.log(gameOver.winner);
         switchPlayerTurn();
     }
     
@@ -114,6 +113,6 @@ const controller = (function() {
 
     }
 
-    return {play, getActivePlayer, getTies}
+    return {play, getActivePlayer, getTies};
 })();
 controller.play();
