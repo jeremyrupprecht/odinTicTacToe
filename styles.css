@@ -1,3 +1,32 @@
+:root {
+    --background: rgb(8, 11, 12);
+    --foreground: #081e28;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 html {
-    background-color: gray;
+    background-color: var(--background);
+}
+
+.page-grid {
+    display: grid;
+    grid-template: 1fr 8fr 1fr / 1fr;
+}
+
+.header {
+
+}
+
+.body {
+
+}
+
+.stats {
+
 }

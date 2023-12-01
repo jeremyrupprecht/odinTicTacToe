@@ -48,7 +48,7 @@ const gameBoard = (function() {
     return {getBoard, placeTile, printBoard, resetBoard}
 })();
 
-const controller = (function() {
+const gameController = (function() {
 
     const player1 = player("X");
     const player2 = player("O");
@@ -127,13 +127,20 @@ const controller = (function() {
     }
     return {play, getActivePlayer, getTies};
 })();
-controller.play();
 
 const displayController = (function() {
-    const testing = () => {
-        console.log("Booger Aids!!!"); 
-    }
-    return {testing}
+    const game = gameController();
+
+
+
+    const renderGameBoard = () => {
+
+    }    
+
+    // Board event listener
+
+    // Reset button event listener
+
 })();
 
 displayController.testing();
