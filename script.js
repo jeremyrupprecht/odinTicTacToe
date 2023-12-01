@@ -128,3 +128,12 @@ const controller = (function() {
     return {play, getActivePlayer, getTies};
 })();
 controller.play();
+
+const displayController = (function() {
+    const testing = () => {
+        console.log("Booger Aids!!!");
+    }
+    return {testing}
+})();
+
+displayController.testing();
