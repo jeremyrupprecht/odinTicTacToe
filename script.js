@@ -131,7 +131,7 @@ controller.play();
 
 const displayController = (function() {
     const testing = () => {
-        console.log("Booger Aids!!!");
+        console.log("Booger Aids!!!"); 
     }
     return {testing}
 })();
