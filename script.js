@@ -3,7 +3,8 @@ const player = (tileType) => {
     const getScore = () => score;
     const incrementScore = () => score++;
     const getTileType = () => tileType;
-    return {getScore, incrementScore, getTileType};
+    const resetScore = () => score = 0;
+    return {getScore, incrementScore, getTileType, resetScore};
 }
 
 const gameBoard = (function() {
@@ -39,7 +40,9 @@ const gameBoard = (function() {
     };
 
     const resetBoard = () => {
-
+        gameBoard = [["", "", ""],
+                    ["", "", ""],
+                    ["", "", ""]];
     };
 
     return {getBoard, placeTile, printBoard, resetBoard}
@@ -55,6 +58,7 @@ const controller = (function() {
         over: false,
         winner: "none",
     }
+    let playAgain = true;
 
     const getActivePlayer = () => activePlayer;
     const getTies = () => ties;
@@ -89,6 +93,15 @@ const controller = (function() {
         return {over: false, winner: "none"};
     };
 
+    const resetGame = () => {
+        activePlayer = player1;
+        gameBoard.resetBoard();
+        gameOver = {
+            over: false,
+            winner: "none",
+        }
+    }
+
     const playRound = () => {
         console.log("Round Start!");
         let input = prompt("Enter in (zero-indexed) tile coordinates (x y):").split(" ");
@@ -96,23 +109,22 @@ const controller = (function() {
         let y = input[1];
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
-        console.log(gameOver.winner);
         switchPlayerTurn();
     }
-    
     const play = () => {
-        // while (true) {
-            // while (!(gameOver.over)) {
-                 //playRound();
-            // }
-        // }
-
-        for (let i = 0; i < 9; i++) {
-            playRound();
+        while (playAgain) {
+            gameBoard.printBoard();
+            while (!(gameOver.over)) {
+                playRound();
+            }
+            console.log(`Scores: player ${player1.getTileType()}: ${player1.getScore()}, player ${player2.getTileType()}: ${player2.getScore()}`)
+            console.log("The game is over...");
+            let playAgainInput = prompt("Would you like to play again? (y/n):");
+            playAgain = true ? playAgainInput == "y" : false;
+            resetGame();
         }
-
+        console.log("quiting...");
     }
-
     return {play, getActivePlayer, getTies};
 })();
 controller.play();
