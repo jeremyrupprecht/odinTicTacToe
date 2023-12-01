@@ -131,16 +131,52 @@ const gameController = (function() {
 
 const displayController = (function() {
 
+    //gameController.play();
+    const playerTurnDiv = document.querySelector(".turnImg");
+    const boardDiv = document.querySelector(".boardGrid");
+    const resetButton = document.querySelector(".resetButton");
 
+    const updateScreen = () => {
 
-    const renderGameBoard = () => {
+        // Clear board
+
+        // Get updated board and player turn
+
+        // Display player turn
+
+        // Display board squares
 
     }    
 
-    // Board event listener
+    const clickGridCell = (e) => {
+        const gridCell = e.target.dataset.cell;
+        if (!gridCell) return;
+        console.log(`Click! ${gridCell}`);
+        // Play game round
+        
+        // Update screen
+    }
 
-    // Reset button event listener
+    const hoverGridCell = (e) => {
+        const gridCell = e.target.dataset.cell;
+        if (!gridCell) return;
+
+    }
+
+    const resetGame = () => {
+        console.log("reset!");
+    }
+
+    const setupListeners = () => {
+        boardDiv.addEventListener("click", clickGridCell);
+        boardDiv.addEventListener("mouseover", hoverGridCell);
+        resetButton.addEventListener("click", resetGame);
+        // Reset button event listener
+    }
+
+    return {updateScreen, setupListeners}
 
 })();
 
-// displayController.testing();
+// displayController.updateScreen();
+displayController.setupListeners();
