@@ -1,5 +1,5 @@
 :root {
-    --background: rgb(8, 11, 12);
+    --background: rgb(0, 8, 18);
     --foreground: #081e28;
 
 }
@@ -9,6 +9,7 @@
     padding: 0;
     font-family: 'Outfit', sans-serif;
     box-sizing: border-box;
+    color: white;
 }
 
 body {
@@ -16,16 +17,22 @@ body {
     width: 100vw;
 }
 
+.line {
+    position: absolute;
+    height: 500px;
+    width: 1px;
+    background-color: white;
+    left: 50%;
+}
+
 .page-grid {
     height: 100%;
     width: 100%;
-    background-color: var(--foreground);
+    background-color: var(--background);
 
     display: grid;
     grid-template: 2fr 8fr 2fr / 1fr;
-    align-items: center;
-    justify-items: center;
-    
+    place-items: center;
 }
 
 .header {
@@ -48,6 +55,9 @@ body {
     padding: 15px;
     border-radius: 15px;
     display: flex;
+    justify-content: center;
+    width: 150px;
+    margin-right: 22px;
 }
 
 .currentTurn > h2 {
@@ -66,7 +76,6 @@ body {
     background-color: rgb(169, 190, 200);
     padding: 10px;
     border-radius: 15px;
-
     border: none;
 }
 
@@ -75,9 +84,26 @@ body {
     width: 24px;
 }
 
+.resetButton:hover {
+    background-color: rgb(197, 221, 233);
+}
 
 .body {
+    width: 70vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+.boardGrid {
+    display: grid;
+    grid-template: repeat(3, 150px) / repeat(3, 150px);
+    grid-gap: 20px;
+}
+
+.boardCell {
+    background-color: var(--foreground);
+    border-radius: 30px;
 }
 
 .stats {
@@ -87,5 +113,11 @@ body {
 @media only screen and (max-width: 600px) {
     .header {
         padding: 20px 0px;
+    }
+    .resetButton {
+
+    }
+    .currentTurn {
+        margin-right: 0px;
     }
 }

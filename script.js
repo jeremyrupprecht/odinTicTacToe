@@ -127,9 +127,9 @@ const gameController = (function() {
     }
     return {play, getActivePlayer, getTies};
 })();
+// gameController.play();
 
 const displayController = (function() {
-    const game = gameController();
 
 
 
@@ -143,4 +143,4 @@ const displayController = (function() {
 
 })();
 
-displayController.testing();
+// displayController.testing();
