@@ -148,46 +148,29 @@ const displayController = (function() {
 
     }    
 
-    const clickBoardCell = (e) => {
-        const gridCell = e.target.dataset.cell;
-        if (!gridCell) return;
-        if (e.target.classList.contains("clicked")) return;
-        console.log(`Click! ${gridCell}`);
+    function clickBoardCell() {
+        // const gridCell = e.target.dataset.cell;
+        // if (!gridCell) return;
+        // if (e.target.classList.contains("clicked")) return;
+        // console.log(`Click! ${gridCell}`);
         // Play game round
         
         // Update screen
     }
 
-    const hoverOverBoardCell = (e) => {
+    function hoverOverBoardCell(e) {
 
-
-        console.log('IN');
-
-        // const gridCell = e.target.dataset.cell;
-        // if (!gridCell) return;
-        // if (e.target.classList.contains("clicked")) return;
-
-        // // const cellImage = e.target.firstElementChild;
-        // // if (gameController.getActivePlayer().getTileType() == "X") {
-        // //     cellImage.src = "images/Xunfilled.svg";
-        // // } else {
-        // //     cellImage.src = "images/Ounfilled.svg";
-        // // }
-
-        // console.log(`mouseon ${gridCell}`);
+        const cellImage = e.currentTarget.firstElementChild;
+        if (gameController.getActivePlayer().getTileType() == "X") {
+            cellImage.src = "images/Xunfilled.svg";
+        } else {
+            cellImage.src = "images/Ounfilled.svg";
+        }
     }
 
-    const hoverOutOfBoardCell = (e) => {
-
-        console.log("OUT");
-
-        // const gridCell = e.target.dataset.cell;
-        // if (!gridCell) return;
-        // if (e.target.classList.contains("clicked")) return;
-        
-        // // const cellImage = e.target.firstElementChild;
-        // // cellImage.src = "";
-        // console.log(`mouseout ${gridCell}`);
+    function hoverOutOfBoardCell(e) {
+        const cellImage = e.currentTarget.firstElementChild;
+        cellImage.src = "";
     }
 
     const resetGame = () => {
