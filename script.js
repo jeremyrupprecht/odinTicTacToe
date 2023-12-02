@@ -85,17 +85,37 @@ const gameController = (function() {
                 player.incrementScore();
                 return {over: true, winner: player};
         }
+        // If no player has won, but all 9 tiles are filled, it's a tie
+        let filledTiles = 0
+        for (let i = 0; i < boardLength; i++) {
+            for (let o = 0; o < boardLength; o++) {
+                if (board[i][o]) {
+                    filledTiles++;
+                }
+            }
+        }
+        if (filledTiles == 9) {
+            ties++;
+            return {over: true, winner: "tie"};
+        } 
+
         return {over: false, winner: "none"};
     };
 
-    const resetGame = () => {
+    const nextRound = () => {
         activePlayer = player1;
         gameBoard.resetBoard();
         gameOver = {
             over: false,
             winner: "none",
         }
-        console.log("RESET!");
+    }
+
+    const resetGame = () => {
+        nextRound();
+        player1.resetScore();
+        player2.resetScore();
+        ties = 0;
     }
 
     const playRound = (x, y) => {
@@ -103,7 +123,7 @@ const gameController = (function() {
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
     }
-    return {getActivePlayer, getTies, playRound, getGameOver, resetGame};
+    return {getActivePlayer, getTies, playRound, getGameOver, nextRound, resetGame};
 })();
 
 const displayController = (function() {
@@ -130,8 +150,13 @@ const displayController = (function() {
 
             // Update player score
             const winningPlayer = gameController.getGameOver().winner;
-            const winningPlayerScoreDiv = document.querySelector(`.${winningPlayer.getTileType()}score`);
-            winningPlayerScoreDiv.textContent = winningPlayer.getScore();
+            if (winningPlayer != "tie") {
+                const winningPlayerScoreDiv = document.querySelector(`.${winningPlayer.getTileType()}score`);
+                winningPlayerScoreDiv.textContent = winningPlayer.getScore();
+            } else {
+                const tieScoreDiv = document.querySelector(".tiesScore");
+                tieScoreDiv.textContent = gameController.getTies();
+            }
 
             // Render game over modal
             setTimeout(() => {
@@ -170,7 +195,7 @@ const displayController = (function() {
     }
 
     const goToNextRound = () => {
-        gameController.resetGame();
+        gameController.nextRound();
         playerTurnImage.src = "images/Xgray.svg";
         const gridCells = Array.from(boardDiv.children);
         gridCells.forEach(cell => {
@@ -186,6 +211,7 @@ const displayController = (function() {
     // scores are reset as well
     const resetGame = () => {
         goToNextRound();
+        gameController.resetGame();
         const scores = Array.from(document.querySelectorAll(".score"));
         scores.forEach(score => {
             score.textContent = 0;
