@@ -30,15 +30,6 @@ const gameBoard = (function() {
     }
 
     const placeTile = (player, x, y) => {
-        // If there's already a tile there, don't replace it, return immediately
-
-        // REMOVE THIS AFTER BUTTONS DISABLE AFTER BEING CLICKED FUNCTIONALITY 
-        // IS IMPLEMENTED
-
-        if (gameBoard[x][y]) {
-            console.log("NOPE");
-            return;
-        }
         gameBoard[x][y] = `${player.getTileType()}`;
         printBoard();
     };
@@ -104,16 +95,16 @@ const gameController = (function() {
             over: false,
             winner: "none",
         }
+        // console.log("RESET!");
     }
 
     const playRound = (x, y) => {
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
-
-
-
-
+        // if (gameOver.over) {
+        //     resetGame();
+        // }
     }
     const play = () => {
         while (playAgain) {
@@ -125,42 +116,52 @@ const gameController = (function() {
             console.log("The game is over...");
             let playAgainInput = prompt("Would you like to play again? (y/n):");
             playAgain = true ? playAgainInput == "y" : false;
-            resetGame();
+            // resetGame();
         }
         console.log("quiting...");
     }
-    return {play, getActivePlayer, getTies, playRound};
+
+    return {getActivePlayer, getTies, playRound, getGameOver};
 })();
 
 const displayController = (function() {
 
-    const playerTurnDiv = document.querySelector(".turnImg");
+    const playerTurnImage = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
     const resetButton = document.querySelector(".resetButton");
 
-    const updateScreen = () => {
+    const updateScreen = (cell) => {
+        // Place the opposing tile of the active player as the active player
+        // is switched at the end playRound();
+        const cellImage = cell.firstElementChild;
+        if (gameController.getActivePlayer().getTileType() == "X") {
+            cellImage.src = "images/Ofilled.svg";
+            playerTurnImage.src = "images/Xgray.svg";
+        } else {
+            cellImage.src = "images/Xfilled.svg";
+            playerTurnImage.src = "images/Ogray.svg";
+        }
 
-        // Clear board
+        console.log(gameController.getGameOver().over);
+        if (gameController.getGameOver().over) {
+            console.log("OVAAAA");
+            // Render game over modal
 
-        // Get updated board and player turn
+            // Update player score
+            const winningPlayer = gameController.getGameOver().winner;
+            const winningPlayerScoreDiv = winningPlayer.getTileType() === "X"
+            ? document.querySelector(".Xscore")
+            : document.querySelector(".Oscore");
+            winningPlayerScoreDiv.textContent = winningPlayer.getScore();
 
-        // Display player turn
+        }
 
-        // Display board squares
 
     }    
 
     function clickBoardCell() {
         gameController.playRound(this.dataset.x, this.dataset.y);
-
-        const cellImage = this.firstElementChild;
-        // Place the opposing tile of the active player as the active player
-        // is switched at the end playRound();
-        if (gameController.getActivePlayer().getTileType() == "X") {
-            cellImage.src = "images/Ofilled.svg";
-        } else {
-            cellImage.src = "images/Xfilled.svg";
-        }
+        updateScreen(this);
         // Prevent players from filling in cells that are already taken
         this.removeEventListener("click", clickBoardCell);
         this.removeEventListener("mouseenter", hoverOverBoardCell);
