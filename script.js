@@ -146,6 +146,7 @@ const displayController = (function() {
         if (gameController.getGameOver().over) {
             console.log("OVAAAA");
             // Render game over modal
+            
 
             // Update player score
             const winningPlayer = gameController.getGameOver().winner;
@@ -155,8 +156,6 @@ const displayController = (function() {
             winningPlayerScoreDiv.textContent = winningPlayer.getScore();
 
         }
-
-
     }    
 
     function clickBoardCell() {
