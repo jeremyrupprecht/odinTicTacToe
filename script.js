@@ -103,21 +103,6 @@ const gameController = (function() {
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
     }
-    const play = () => {
-        while (playAgain) {
-            gameBoard.printBoard();
-            while (!(gameOver.over)) {
-                playRound();
-            }
-            console.log(`Scores: player ${player1.getTileType()}: ${player1.getScore()}, player ${player2.getTileType()}: ${player2.getScore()}`)
-            console.log("The game is over...");
-            let playAgainInput = prompt("Would you like to play again? (y/n):");
-            playAgain = true ? playAgainInput == "y" : false;
-            // resetGame();
-        }
-        console.log("quiting...");
-    }
-
     return {getActivePlayer, getTies, playRound, getGameOver, resetGame};
 })();
 
