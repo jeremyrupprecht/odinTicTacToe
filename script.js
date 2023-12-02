@@ -31,6 +31,10 @@ const gameBoard = (function() {
 
     const placeTile = (player, x, y) => {
         // If there's already a tile there, don't replace it, return immediately
+
+        // REMOVE THIS AFTER BUTTONS DISABLE AFTER BEING CLICKED FUNCTIONALITY 
+        // IS IMPLEMENTED
+
         if (gameBoard[x][y]) {
             console.log("NOPE");
             return;
@@ -102,14 +106,14 @@ const gameController = (function() {
         }
     }
 
-    const playRound = () => {
-        console.log("Round Start!");
-        let input = prompt("Enter in (zero-indexed) tile coordinates (x y):").split(" ");
-        let x = input[0];
-        let y = input[1];
+    const playRound = (x, y) => {
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
+
+
+
+
     }
     const play = () => {
         while (playAgain) {
@@ -125,13 +129,11 @@ const gameController = (function() {
         }
         console.log("quiting...");
     }
-    return {play, getActivePlayer, getTies};
+    return {play, getActivePlayer, getTies, playRound};
 })();
-// gameController.play();
 
 const displayController = (function() {
 
-    //gameController.play();
     const playerTurnDiv = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
     const resetButton = document.querySelector(".resetButton");
@@ -149,18 +151,24 @@ const displayController = (function() {
     }    
 
     function clickBoardCell() {
-        // const gridCell = e.target.dataset.cell;
-        // if (!gridCell) return;
-        // if (e.target.classList.contains("clicked")) return;
-        // console.log(`Click! ${gridCell}`);
-        // Play game round
-        
-        // Update screen
+        gameController.playRound(this.dataset.x, this.dataset.y);
+
+        const cellImage = this.firstElementChild;
+        // Place the opposing tile of the active player as the active player
+        // is switched at the end playRound();
+        if (gameController.getActivePlayer().getTileType() == "X") {
+            cellImage.src = "images/Ofilled.svg";
+        } else {
+            cellImage.src = "images/Xfilled.svg";
+        }
+        // Prevent players from filling in cells that are already taken
+        this.removeEventListener("click", clickBoardCell);
+        this.removeEventListener("mouseenter", hoverOverBoardCell);
+        this.removeEventListener("mouseout", hoverOutOfBoardCell);
     }
 
-    function hoverOverBoardCell(e) {
-
-        const cellImage = e.currentTarget.firstElementChild;
+    function hoverOverBoardCell() {
+        const cellImage = this.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
             cellImage.src = "images/Xunfilled.svg";
         } else {
@@ -168,8 +176,8 @@ const displayController = (function() {
         }
     }
 
-    function hoverOutOfBoardCell(e) {
-        const cellImage = e.currentTarget.firstElementChild;
+    function hoverOutOfBoardCell() {
+        const cellImage = this.firstElementChild;
         cellImage.src = "";
     }
 
@@ -190,6 +198,4 @@ const displayController = (function() {
     return {updateScreen, setupListeners}
 
 })();
-
-// displayController.updateScreen();
 displayController.setupListeners();
