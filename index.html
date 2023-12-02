@@ -76,14 +76,26 @@
 
     <div class="gameOverModal">
         <div class="centerModal">
-            <p>CONGRATULATIONS!</p>
+            <p class="congratsP">CONGRATULATIONS!</p>
             <div class="modalWinner">
                 <img src="images/XFilled.svg" class="winnerIcon" alt="The tile of the winning player">
-                <h2>TAKES THE ROUND</h2>
+                <h2 class="modalAccouncement">TAKES THE ROUND</h2>
             </div>
             <div class="modalButtons">
                 <button class="modalResetButton"><h3>RESET</h3></button>
                 <button class="nextRoundButton"><h3>NEXT ROUND</h3></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="gameOverTieModal" id ="gameOverTieModal">
+        <div class="centerModal">
+            <div class="modalWinner">
+                <h1 class="modalAccouncement">ITS A TIE!</h1>
+            </div>
+            <div class="modalButtons">
+                <button class="modalResetButtonTie"><h3>RESET</h3></button>
+                <button class="nextRoundButtonTie"><h3>NEXT ROUND</h3></button>
             </div>
         </div>
     </div>

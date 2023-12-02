@@ -131,8 +131,12 @@ const displayController = (function() {
     const playerTurnImage = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
     const pageResetButton = document.querySelector(".resetButton");
+    const gameOverModal = document.querySelector(".gameOverModal");
+    const gameOverTieModal = document.querySelector(".gameOverTieModal");
     const modalResetButton = document.querySelector(".modalResetButton");
     const modalNextRoundButton = document.querySelector(".nextRoundButton");
+    const modalResetButtonTie = document.querySelector(".modalResetButtonTie");
+    const modalNextRoundButtonTie = document.querySelector(".nextRoundButtonTie");
 
     const updateScreen = (cell) => {
         // Place the opposing tile of the active player as the active player
@@ -160,13 +164,16 @@ const displayController = (function() {
 
             // Render game over modal
             setTimeout(() => {
-                const gameOverModal = document.querySelector(".gameOverModal");
-                const winnerIcon = document.querySelector(".winnerIcon");
-                const nextRoundButton = document.querySelector(".nextRoundButton");
-                gameOverModal.style.visibility = "visible";
-                winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
-                nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
-                ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                if (winningPlayer != "tie") {
+                    const winnerIcon = document.querySelector(".winnerIcon");
+                    const nextRoundButton = document.querySelector(".nextRoundButton");
+                    gameOverModal.style.visibility = "visible";
+                    winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
+                    nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
+                    ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                } else {
+                    gameOverTieModal.style.visibility = "visible";
+                }
             }, 500);
         }
     }    
@@ -202,8 +209,8 @@ const displayController = (function() {
             const cellImage = cell.firstElementChild;
             cellImage.src = "";
         })
-        const gameOverModal = document.querySelector(".gameOverModal");
         gameOverModal.style.visibility = "hidden";
+        gameOverTieModal.style.visibility = "hidden";
         setupListeners();
     }
 
@@ -228,6 +235,8 @@ const displayController = (function() {
         pageResetButton.addEventListener("click", goToNextRound);
         modalResetButton.addEventListener("click", resetGame);
         modalNextRoundButton.addEventListener("click", goToNextRound);
+        modalResetButtonTie.addEventListener("click", resetGame)
+        modalNextRoundButtonTie.addEventListener("click",goToNextRound);
     }
 
     return {updateScreen, setupListeners}
