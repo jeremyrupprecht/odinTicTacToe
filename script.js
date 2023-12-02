@@ -148,19 +148,46 @@ const displayController = (function() {
 
     }    
 
-    const clickGridCell = (e) => {
+    const clickBoardCell = (e) => {
         const gridCell = e.target.dataset.cell;
         if (!gridCell) return;
+        if (e.target.classList.contains("clicked")) return;
         console.log(`Click! ${gridCell}`);
         // Play game round
         
         // Update screen
     }
 
-    const hoverGridCell = (e) => {
-        const gridCell = e.target.dataset.cell;
-        if (!gridCell) return;
+    const hoverOverBoardCell = (e) => {
 
+
+        console.log('IN');
+
+        // const gridCell = e.target.dataset.cell;
+        // if (!gridCell) return;
+        // if (e.target.classList.contains("clicked")) return;
+
+        // // const cellImage = e.target.firstElementChild;
+        // // if (gameController.getActivePlayer().getTileType() == "X") {
+        // //     cellImage.src = "images/Xunfilled.svg";
+        // // } else {
+        // //     cellImage.src = "images/Ounfilled.svg";
+        // // }
+
+        // console.log(`mouseon ${gridCell}`);
+    }
+
+    const hoverOutOfBoardCell = (e) => {
+
+        console.log("OUT");
+
+        // const gridCell = e.target.dataset.cell;
+        // if (!gridCell) return;
+        // if (e.target.classList.contains("clicked")) return;
+        
+        // // const cellImage = e.target.firstElementChild;
+        // // cellImage.src = "";
+        // console.log(`mouseout ${gridCell}`);
     }
 
     const resetGame = () => {
@@ -168,10 +195,13 @@ const displayController = (function() {
     }
 
     const setupListeners = () => {
-        boardDiv.addEventListener("click", clickGridCell);
-        boardDiv.addEventListener("mouseover", hoverGridCell);
+        const gridCells = Array.from(boardDiv.children);
+        gridCells.forEach(cell => {
+            cell.addEventListener("click", clickBoardCell);
+            cell.addEventListener("mouseenter", hoverOverBoardCell);
+            cell.addEventListener("mouseout", hoverOutOfBoardCell);
+        })
         resetButton.addEventListener("click", resetGame);
-        // Reset button event listener
     }
 
     return {updateScreen, setupListeners}
