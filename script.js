@@ -95,16 +95,13 @@ const gameController = (function() {
             over: false,
             winner: "none",
         }
-        // console.log("RESET!");
+        console.log("RESET!");
     }
 
     const playRound = (x, y) => {
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
-        // if (gameOver.over) {
-        //     resetGame();
-        // }
     }
     const play = () => {
         while (playAgain) {
@@ -121,40 +118,46 @@ const gameController = (function() {
         console.log("quiting...");
     }
 
-    return {getActivePlayer, getTies, playRound, getGameOver};
+    return {getActivePlayer, getTies, playRound, getGameOver, resetGame};
 })();
 
 const displayController = (function() {
 
     const playerTurnImage = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
-    const resetButton = document.querySelector(".resetButton");
+    const pageResetButton = document.querySelector(".resetButton");
+    const modalResetButton = document.querySelector(".modalResetButton");
+    const modalNextRoundButton = document.querySelector(".nextRoundButton");
 
     const updateScreen = (cell) => {
         // Place the opposing tile of the active player as the active player
         // is switched at the end playRound();
         const cellImage = cell.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
-            cellImage.src = "images/Ofilled.svg";
+            cellImage.src = "images/OFilled.svg";
             playerTurnImage.src = "images/Xgray.svg";
         } else {
             cellImage.src = "images/Xfilled.svg";
             playerTurnImage.src = "images/Ogray.svg";
         }
 
-        console.log(gameController.getGameOver().over);
         if (gameController.getGameOver().over) {
-            console.log("OVAAAA");
-            // Render game over modal
-            
 
             // Update player score
             const winningPlayer = gameController.getGameOver().winner;
-            const winningPlayerScoreDiv = winningPlayer.getTileType() === "X"
-            ? document.querySelector(".Xscore")
-            : document.querySelector(".Oscore");
+            const winningPlayerScoreDiv = document.querySelector(`.${winningPlayer.getTileType()}score`);
             winningPlayerScoreDiv.textContent = winningPlayer.getScore();
 
+            // Render game over modal
+            setTimeout(() => {
+                const gameOverModal = document.querySelector(".gameOverModal");
+                const winnerIcon = document.querySelector(".winnerIcon");
+                const nextRoundButton = document.querySelector(".nextRoundButton");
+                gameOverModal.style.visibility = "visible";
+                winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
+                nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
+                ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+            }, 500);
         }
     }    
 
@@ -181,8 +184,27 @@ const displayController = (function() {
         cellImage.src = "";
     }
 
+    const goToNextRound = () => {
+        gameController.resetGame();
+        playerTurnImage.src = "images/Xgray.svg";
+        const gridCells = Array.from(boardDiv.children);
+        gridCells.forEach(cell => {
+            const cellImage = cell.firstElementChild;
+            cellImage.src = "";
+        })
+        const gameOverModal = document.querySelector(".gameOverModal");
+        gameOverModal.style.visibility = "hidden";
+        setupListeners();
+    }
+
+    // Resetting the game is identical to going to the next round but the player
+    // scores are reset as well
     const resetGame = () => {
-        console.log("reset!");
+        goToNextRound();
+        const scores = Array.from(document.querySelectorAll(".score"));
+        scores.forEach(score => {
+            score.textContent = 0;
+        });
     }
 
     const setupListeners = () => {
@@ -192,7 +214,9 @@ const displayController = (function() {
             cell.addEventListener("mouseenter", hoverOverBoardCell);
             cell.addEventListener("mouseout", hoverOutOfBoardCell);
         })
-        resetButton.addEventListener("click", resetGame);
+        pageResetButton.addEventListener("click", goToNextRound);
+        modalResetButton.addEventListener("click", resetGame);
+        modalNextRoundButton.addEventListener("click", goToNextRound);
     }
 
     return {updateScreen, setupListeners}
