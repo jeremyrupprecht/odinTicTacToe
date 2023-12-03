@@ -141,7 +141,6 @@ const gameController = (function() {
     const playRound = (x, y) => {
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
-        console.log(gameOver.winningTiles);
         switchPlayerTurn();
     }
     return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
