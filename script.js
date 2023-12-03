@@ -164,10 +164,10 @@ const displayController = (function() {
         const tileImage = tile.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
             tileImage.src = "images/OFilled.svg";
-            playerTurnImage.src = "images/Xgray.svg";
+            playerTurnImage.src = "images/XGray.svg";
         } else {
             tileImage.src = "images/XFilled.svg";
-            playerTurnImage.src = "images/Ogray.svg";
+            playerTurnImage.src = "images/OGray.svg";
         }
 
         if (gameController.getGameOver().over) {
@@ -235,9 +235,9 @@ const displayController = (function() {
     function hoverOverBoardTile() {
         const tileImage = this.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
-            tileImage.src = "images/Xunfilled.svg";
+            tileImage.src = "images/XUnfilled.svg";
         } else {
-            tileImage.src = "images/Ounfilled.svg";
+            tileImage.src = "images/OUnfilled.svg";
         }
     }
 
@@ -248,7 +248,7 @@ const displayController = (function() {
 
     const goToNextRound = () => {
         gameController.nextRound();
-        playerTurnImage.src = "images/Xgray.svg";
+        playerTurnImage.src = "images/XGray.svg";
         const gridTiles = Array.from(boardDiv.children);
         gridTiles.forEach(tile => {
             tile.style.backgroundColor = "#081e28";
