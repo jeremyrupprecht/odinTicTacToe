@@ -117,9 +117,9 @@ const gameController = (function() {
         }
         if (filledTiles == 9) {
             ties++;
-            return {over: true, winner: "tie"};
+            return {over: true, winner: "tie", winningTiles: ""};
         } 
-        return {over: false, winner: "none"};
+        return {over: false, winner: "none", winningTiles: ""};
     };
 
     const nextRound = () => {
@@ -183,18 +183,20 @@ const displayController = (function() {
                 tieScoreDiv.textContent = gameController.getTies();
             }
 
-            // Highlight winning tiles (a row, col or diagonal) so the player
-            // knows they he/she won
+            // If there's no tie, highlight winning tiles (a row, col or diagonal)
+            // so the player knows they he/she won
             let numWinningTiles = gameController.getGameOver().winningTiles.length;
-            for (let i = 0; i < numWinningTiles; i++) {
-                let x = gameController.getGameOver().winningTiles[i][0];
-                let y = gameController.getGameOver().winningTiles[i][1];
-                const tileDiv = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-                const tileDivImg = tileDiv.firstElementChild;
-                tileDiv.style.backgroundColor = winningPlayer.getTileType() == "X"
-                ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
-                tileDivImg.src = `images/${winningPlayer.getTileType()}White.svg`;
-            }
+            if (numWinningTiles) {
+                for (let i = 0; i < numWinningTiles; i++) {
+                    let x = gameController.getGameOver().winningTiles[i][0];
+                    let y = gameController.getGameOver().winningTiles[i][1];
+                    const tileDiv = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                    const tileDivImg = tileDiv.firstElementChild;
+                    tileDiv.style.backgroundColor = winningPlayer.getTileType() == "X"
+                    ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                    tileDivImg.src = `images/${winningPlayer.getTileType()}White.svg`;
+                }
+            } 
 
             // Render game over modal
             setTimeout(() => {
@@ -214,11 +216,21 @@ const displayController = (function() {
 
     function clickBoardCell() {
         gameController.playRound(this.dataset.x, this.dataset.y);
-        updateScreen(this);
-        // Prevent players from filling in cells that are already taken
+        if (gameController.getGameOver().over) {
+            // Disable remaining tiles so the player cannot click them
+            // while the game over modal is active
+            const gridCells = Array.from(boardDiv.children);
+            gridCells.forEach(cell => {
+                cell.removeEventListener("click", clickBoardCell);
+                cell.removeEventListener("mouseenter", hoverOverBoardCell);
+                cell.removeEventListener("mouseout", hoverOutOfBoardCell);
+            })
+        }
+        // Prevent players from filling in tiles that are already taken
         this.removeEventListener("click", clickBoardCell);
         this.removeEventListener("mouseenter", hoverOverBoardCell);
         this.removeEventListener("mouseout", hoverOutOfBoardCell);
+        updateScreen(this);
     }
 
     function hoverOverBoardCell() {
@@ -273,6 +285,6 @@ const displayController = (function() {
         modalResetButtonTie.addEventListener("click", resetGame)
         modalNextRoundButtonTie.addEventListener("click",goToNextRound);
     }
-    return {updateScreen, setupListeners}
+    return {setupListeners}
 })();
 displayController.setupListeners();
