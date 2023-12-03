@@ -52,8 +52,8 @@ const gameController = (function() {
     let gameOver = {
         over: false,
         winner: "none",
+        winningTiles: [],
     }
-    let playAgain = true;
 
     const getActivePlayer = () => activePlayer;
     const getTies = () => ties;
@@ -66,24 +66,45 @@ const gameController = (function() {
         // A win can only happen at the current move so check the current row, col
         // and diagonal (both ways) for the a win
         let tileType = player.getTileType();
-        let rowsNeededToWin = 0;
-        let colsNeededToWin = 0;
-        let diagsNeededToWin = 0;
-        let reverseDiagsNeededToWin = 0;
+        let rowsNeededToWin = {count: 0, tiles: []};
+        let colsNeededToWin = {count: 0, tiles: []};
+        let diagsNeededToWin = {count: 0, tiles: []};
+        let reverseDiagsNeededToWin = {count: 0, tiles: []};
         let boardLength = board.length;
         for (let i = 0; i < boardLength; i++) {
-            if (board[x][i] == tileType) rowsNeededToWin++;
-            if (board[i][y] == tileType) colsNeededToWin++;
-            if (board[i][i] == tileType) diagsNeededToWin++;
-            if (board[i][boardLength - 1 - i] == tileType) reverseDiagsNeededToWin++;
+            if (board[x][i] == tileType) {
+                rowsNeededToWin.count++;
+                rowsNeededToWin.tiles.push([x, i]);
+            }
+            if (board[i][y] == tileType) {
+                colsNeededToWin.count++;
+                colsNeededToWin.tiles.push([i, y]);
+            } 
+            if (board[i][i] == tileType) {
+                diagsNeededToWin.count++;
+                diagsNeededToWin.tiles.push([i, i]);
+            }
+            if (board[i][boardLength - 1 - i] == tileType) {
+                reverseDiagsNeededToWin.count++;
+                reverseDiagsNeededToWin.tiles.push([i, boardLength - 1 - i]);
+            }
         }
-        if (rowsNeededToWin == boardLength ||
-            colsNeededToWin == boardLength || 
-            diagsNeededToWin == boardLength ||
-            reverseDiagsNeededToWin == boardLength) {
-                console.log(`Player ${tileType} Wins!`);
+        switch(boardLength) {
+            case rowsNeededToWin.count:
                 player.incrementScore();
-                return {over: true, winner: player};
+                return {over: true, winner: player, winningTiles: rowsNeededToWin.tiles};
+
+            case colsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: colsNeededToWin.tiles};
+
+            case diagsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: diagsNeededToWin.tiles};
+
+            case reverseDiagsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: reverseDiagsNeededToWin.tiles};
         }
         // If no player has won, but all 9 tiles are filled, it's a tie
         let filledTiles = 0
@@ -98,7 +119,6 @@ const gameController = (function() {
             ties++;
             return {over: true, winner: "tie"};
         } 
-
         return {over: false, winner: "none"};
     };
 
@@ -121,9 +141,10 @@ const gameController = (function() {
     const playRound = (x, y) => {
         gameBoard.placeTile(getActivePlayer(), x, y);
         gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
+        console.log(gameOver.winningTiles);
         switchPlayerTurn();
     }
-    return {getActivePlayer, getTies, playRound, getGameOver, nextRound, resetGame};
+    return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
 })();
 
 const displayController = (function() {
@@ -146,7 +167,7 @@ const displayController = (function() {
             cellImage.src = "images/OFilled.svg";
             playerTurnImage.src = "images/Xgray.svg";
         } else {
-            cellImage.src = "images/Xfilled.svg";
+            cellImage.src = "images/XFilled.svg";
             playerTurnImage.src = "images/Ogray.svg";
         }
 
@@ -162,18 +183,29 @@ const displayController = (function() {
                 tieScoreDiv.textContent = gameController.getTies();
             }
 
+            // Highlight winning tiles (a row, col or diagonal) so the player
+            // knows they he/she won
+            let numWinningTiles = gameController.getGameOver().winningTiles.length;
+            for (let i = 0; i < numWinningTiles; i++) {
+                let x = gameController.getGameOver().winningTiles[i][0];
+                let y = gameController.getGameOver().winningTiles[i][1];
+                const tileDiv = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                const tileDivImg = tileDiv.firstElementChild;
+                tileDiv.style.backgroundColor = winningPlayer.getTileType() == "X"
+                ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                tileDivImg.src = `images/${winningPlayer.getTileType()}White.svg`;
+            }
+
             // Render game over modal
             setTimeout(() => {
                 if (winningPlayer != "tie") {
                     const winnerIcon = document.querySelector(".winnerIcon");
                     const nextRoundButton = document.querySelector(".nextRoundButton");
-                    // gameOverModal.style.visibility = "visible";
                     winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
                     nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
                     ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
                     gameOverModal.classList.add("showModal");
                 } else {
-                    // gameOverTieModal.style.visibility = "visible";
                     gameOverTieModal.classList.add("showModal");
                 }
             }, 500);
@@ -208,14 +240,12 @@ const displayController = (function() {
         playerTurnImage.src = "images/Xgray.svg";
         const gridCells = Array.from(boardDiv.children);
         gridCells.forEach(cell => {
+            cell.style.backgroundColor = "#081e28";
             const cellImage = cell.firstElementChild;
             cellImage.src = "";
         })
-        // gameOverModal.style.visibility = "hidden";
         gameOverModal.classList.remove("showModal");
         gameOverTieModal.classList.remove("showModal");
-
-        // gameOverTieModal.style.visibility = "hidden";
         setupListeners();
     }
 
@@ -244,6 +274,5 @@ const displayController = (function() {
         modalNextRoundButtonTie.addEventListener("click",goToNextRound);
     }
     return {updateScreen, setupListeners}
-
 })();
 displayController.setupListeners();

@@ -1,7 +1,6 @@
 :root {
     --background: rgb(0, 8, 18);
     --foreground: #081e28;
-
 }
 
 * {
@@ -110,11 +109,15 @@ body {
     background-color: var(--foreground);
     border-radius: 30px;
     border: 0px;
-    /* box-shadow: rgba(27, 27, 27, 0.3) 0px 10px 10px; */
     box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 2px inset;
 }
+
 .boardState {
     pointer-events: none;
+}
+
+.filterTest {
+    fill: white;
 }
 
 .stats {
