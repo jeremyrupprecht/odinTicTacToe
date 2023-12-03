@@ -167,12 +167,14 @@ const displayController = (function() {
                 if (winningPlayer != "tie") {
                     const winnerIcon = document.querySelector(".winnerIcon");
                     const nextRoundButton = document.querySelector(".nextRoundButton");
-                    gameOverModal.style.visibility = "visible";
+                    // gameOverModal.style.visibility = "visible";
                     winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
                     nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
                     ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                    gameOverModal.classList.add("showModal");
                 } else {
-                    gameOverTieModal.style.visibility = "visible";
+                    // gameOverTieModal.style.visibility = "visible";
+                    gameOverTieModal.classList.add("showModal");
                 }
             }, 500);
         }
@@ -209,8 +211,11 @@ const displayController = (function() {
             const cellImage = cell.firstElementChild;
             cellImage.src = "";
         })
-        gameOverModal.style.visibility = "hidden";
-        gameOverTieModal.style.visibility = "hidden";
+        // gameOverModal.style.visibility = "hidden";
+        gameOverModal.classList.remove("showModal");
+        gameOverTieModal.classList.remove("showModal");
+
+        // gameOverTieModal.style.visibility = "hidden";
         setupListeners();
     }
 
@@ -238,7 +243,6 @@ const displayController = (function() {
         modalResetButtonTie.addEventListener("click", resetGame)
         modalNextRoundButtonTie.addEventListener("click",goToNextRound);
     }
-
     return {updateScreen, setupListeners}
 
 })();
