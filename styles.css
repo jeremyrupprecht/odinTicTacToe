@@ -17,14 +17,6 @@ body {
     width: 100vw;
 }
 
-.line {
-    position: absolute;
-    height: 500px;
-    width: 1px;
-    background-color: white;
-    left: 50%;
-}
-
 .page-grid {
     height: 100%;
     width: 100%;
@@ -112,12 +104,13 @@ body {
     box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 2px inset;
 }
 
-.boardState {
-    pointer-events: none;
+.boardCell:active {
+    transform: scale(.60);
+    transition-duration: 0.5s;
 }
 
-.filterTest {
-    fill: white;
+.boardState {
+    pointer-events: none;
 }
 
 .stats {
