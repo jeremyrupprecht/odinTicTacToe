@@ -159,15 +159,15 @@ const displayController = (function() {
     const modalResetButtonTie = document.querySelector(".modalResetButtonTie");
     const modalNextRoundButtonTie = document.querySelector(".nextRoundButtonTie");
 
-    const updateScreen = (cell) => {
+    const updateScreen = (tile) => {
         // Place the opposing tile of the active player as the active player
         // is switched at the end playRound();
-        const cellImage = cell.firstElementChild;
+        const tileImage = tile.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
-            cellImage.src = "images/OFilled.svg";
+            tileImage.src = "images/OFilled.svg";
             playerTurnImage.src = "images/Xgray.svg";
         } else {
-            cellImage.src = "images/XFilled.svg";
+            tileImage.src = "images/XFilled.svg";
             playerTurnImage.src = "images/Ogray.svg";
         }
 
@@ -214,47 +214,47 @@ const displayController = (function() {
         }
     }    
 
-    function clickBoardCell() {
+    function clickBoardTile() {
         gameController.playRound(this.dataset.x, this.dataset.y);
         if (gameController.getGameOver().over) {
             // Disable remaining tiles so the player cannot click them
             // while the game over modal is active
-            const gridCells = Array.from(boardDiv.children);
-            gridCells.forEach(cell => {
-                cell.removeEventListener("click", clickBoardCell);
-                cell.removeEventListener("mouseenter", hoverOverBoardCell);
-                cell.removeEventListener("mouseout", hoverOutOfBoardCell);
+            const gridTiles = Array.from(boardDiv.children);
+            gridTiles.forEach(tile => {
+                tile.removeEventListener("click", clickBoardTile);
+                tile.removeEventListener("mouseenter", hoverOverBoardTile);
+                tile.removeEventListener("mouseout", hoverOutOfBoardTile);
             })
         }
         // Prevent players from filling in tiles that are already taken
-        this.removeEventListener("click", clickBoardCell);
-        this.removeEventListener("mouseenter", hoverOverBoardCell);
-        this.removeEventListener("mouseout", hoverOutOfBoardCell);
+        this.removeEventListener("click", clickBoardTile);
+        this.removeEventListener("mouseenter", hoverOverBoardTile);
+        this.removeEventListener("mouseout", hoverOutOfBoardTile);
         updateScreen(this);
     }
 
-    function hoverOverBoardCell() {
-        const cellImage = this.firstElementChild;
+    function hoverOverBoardTile() {
+        const tileImage = this.firstElementChild;
         if (gameController.getActivePlayer().getTileType() == "X") {
-            cellImage.src = "images/Xunfilled.svg";
+            tileImage.src = "images/Xunfilled.svg";
         } else {
-            cellImage.src = "images/Ounfilled.svg";
+            tileImage.src = "images/Ounfilled.svg";
         }
     }
 
-    function hoverOutOfBoardCell() {
-        const cellImage = this.firstElementChild;
-        cellImage.src = "";
+    function hoverOutOfBoardTile() {
+        const tileImage = this.firstElementChild;
+        tileImage.src = "";
     }
 
     const goToNextRound = () => {
         gameController.nextRound();
         playerTurnImage.src = "images/Xgray.svg";
-        const gridCells = Array.from(boardDiv.children);
-        gridCells.forEach(cell => {
-            cell.style.backgroundColor = "#081e28";
-            const cellImage = cell.firstElementChild;
-            cellImage.src = "";
+        const gridTiles = Array.from(boardDiv.children);
+        gridTiles.forEach(tile => {
+            tile.style.backgroundColor = "#081e28";
+            const tileImage = tile.firstElementChild;
+            tileImage.src = "";
         })
         gameOverModal.classList.remove("showModal");
         gameOverTieModal.classList.remove("showModal");
@@ -273,11 +273,11 @@ const displayController = (function() {
     }
 
     const setupListeners = () => {
-        const gridCells = Array.from(boardDiv.children);
-        gridCells.forEach(cell => {
-            cell.addEventListener("click", clickBoardCell);
-            cell.addEventListener("mouseenter", hoverOverBoardCell);
-            cell.addEventListener("mouseout", hoverOutOfBoardCell);
+        const gridTiles = Array.from(boardDiv.children);
+        gridTiles.forEach(tile => {
+            tile.addEventListener("click", clickBoardTile);
+            tile.addEventListener("mouseenter", hoverOverBoardTile);
+            tile.addEventListener("mouseout", hoverOutOfBoardTile);
         })
         pageResetButton.addEventListener("click", goToNextRound);
         modalResetButton.addEventListener("click", resetGame);
