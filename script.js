@@ -1,3 +1,27 @@
+class Player {
+    #score = 0;
+    #tileType = "X";
+    constructor(tileType) {
+        this.#tileType = tileType;
+    }
+
+    getScore() {
+        return this.#score;
+    }
+
+    getTileType() {
+        return this.#tileType;
+    }
+
+    incrementScore() {
+        this.#score++;
+    }
+
+    resetScore() {
+        this.#score = 0;
+    }
+}
+
 const player = (tileType) => {
     let score = 0;
     const getScore = () => score;
@@ -31,7 +55,7 @@ const gameBoard = (function() {
 
     const placeTile = (player, x, y) => {
         gameBoard[x][y] = `${player.getTileType()}`;
-        printBoard();
+        //printBoard();
     };
 
     const resetBoard = () => {
@@ -45,8 +69,9 @@ const gameBoard = (function() {
 
 const gameController = (function() {
 
-    const player1 = player("X");
-    const player2 = player("O");
+    const player1 = new Player("X");
+    const player2 = new Player("O");
+
     let activePlayer = player1;
     let ties = 0;
     let gameOver = {
