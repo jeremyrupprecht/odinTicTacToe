@@ -22,55 +22,91 @@ class Player {
     }
 }
 
-const player = (tileType) => {
-    let score = 0;
-    const getScore = () => score;
-    const incrementScore = () => score++;
-    const getTileType = () => tileType;
-    const resetScore = () => score = 0;
-    return {getScore, incrementScore, getTileType, resetScore};
-}
 
-const gameBoard = (function() {
-    let gameBoard = [["", "", ""],
-                     ["", "", ""],
-                     ["", "", ""]];
+class GameBoard {
+    #gameBoard = [["", "", ""],
+                  ["", "", ""],
+                  ["", "", ""]];
+    
+    constructor() {
+        this.#gameBoard = [["", "", ""],
+                           ["", "", ""],
+                           ["", "", ""]];
+    }
 
-    const getBoard = () => gameBoard;
+    getBoard() {
+        return this.#gameBoard;
+    }
 
-    const printBoard = () => {
+    printBoard() {
         let rowText = "["
-        for(let i = 0; i < gameBoard.length; i++) {
-            for(let o = 0; o < gameBoard[i].length; o++) {
-                if (!gameBoard[i][o]) {
+        let board = this.getBoard();
+        for(let i = 0; i < board.length; i++) {
+            for(let o = 0; o < board[i].length; o++) {
+                if (!board[i][o]) {
                     rowText += " ,";
                     continue;
                 }
-                rowText += gameBoard[i][o] + ",";
+                rowText += board[i][o] + ",";
             }
             console.log(rowText + "]");
             rowText = "[";
         }
     }
 
-    const placeTile = (player, x, y) => {
-        gameBoard[x][y] = `${player.getTileType()}`;
-        //printBoard();
-    };
+    placeTile(player, x, y) {
+        this.#gameBoard[x][y] = `${player.getTileType()}`;
+        this.printBoard();
+    }
 
-    const resetBoard = () => {
-        gameBoard = [["", "", ""],
-                    ["", "", ""],
-                    ["", "", ""]];
-    };
+    resetBoard() {
+        this.#gameBoard = [["", "", ""],
+                          ["", "", ""],
+                          ["", "", ""]];
+    } 
+}
 
-    return {getBoard, placeTile, printBoard, resetBoard}
-})();
+// const gameBoard = (function() {
+//     let gameBoard = [["", "", ""],
+//                      ["", "", ""],
+//                      ["", "", ""]];
+
+//     const getBoard = () => gameBoard;
+
+//     const printBoard = () => {
+//         let rowText = "["
+//         for(let i = 0; i < gameBoard.length; i++) {
+//             for(let o = 0; o < gameBoard[i].length; o++) {
+//                 if (!gameBoard[i][o]) {
+//                     rowText += " ,";
+//                     continue;
+//                 }
+//                 rowText += gameBoard[i][o] + ",";
+//             }
+//             console.log(rowText + "]");
+//             rowText = "[";
+//         }
+//     }
+
+//     const placeTile = (player, x, y) => {
+//         gameBoard[x][y] = `${player.getTileType()}`;
+//         //printBoard();
+//     };
+
+//     const resetBoard = () => {
+//         gameBoard = [["", "", ""],
+//                     ["", "", ""],
+//                     ["", "", ""]];
+//     };
+
+//     return {getBoard, placeTile, printBoard, resetBoard}
+// })();
 
 const gameController = (function() {
 
     const player1 = new Player("X");
     const player2 = new Player("O");
+    const board = new GameBoard();
 
     let activePlayer = player1;
     let ties = 0;
@@ -149,7 +185,7 @@ const gameController = (function() {
 
     const nextRound = () => {
         activePlayer = player1;
-        gameBoard.resetBoard();
+        board.resetBoard();
         gameOver = {
             over: false,
             winner: "none",
@@ -164,8 +200,8 @@ const gameController = (function() {
     }
 
     const playRound = (x, y) => {
-        gameBoard.placeTile(getActivePlayer(), x, y);
-        gameOver = checkGameOver(gameBoard.getBoard(), x, y, getActivePlayer());
+        board.placeTile(getActivePlayer(), x, y);
+        gameOver = checkGameOver(board.getBoard(), x, y, getActivePlayer());
         switchPlayerTurn();
     }
     return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
