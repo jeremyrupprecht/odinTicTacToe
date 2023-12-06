@@ -41,6 +41,7 @@ class GameBoard {
     printBoard() {
         let rowText = "["
         let board = this.getBoard();
+        console.log("HEY", JSON.stringify(board));
         for(let i = 0; i < board.length; i++) {
             for(let o = 0; o < board[i].length; o++) {
                 if (!board[i][o]) {
@@ -66,41 +67,128 @@ class GameBoard {
     } 
 }
 
-// const gameBoard = (function() {
-//     let gameBoard = [["", "", ""],
-//                      ["", "", ""],
-//                      ["", "", ""]];
+class gameControllerClass {
+    #player1 = new Player("X");
+    #player2 = new Player("O");
+    #board = new GameBoard();
+    #activePlayer = this.#player1;
+    #ties = 0;
+    #gameOver = {
+        over: false,
+        winner: "none",
+        winningTiles: [],
+    }
 
-//     const getBoard = () => gameBoard;
+    getActivePlayer() {
+        return this.#activePlayer;
+    }
 
-//     const printBoard = () => {
-//         let rowText = "["
-//         for(let i = 0; i < gameBoard.length; i++) {
-//             for(let o = 0; o < gameBoard[i].length; o++) {
-//                 if (!gameBoard[i][o]) {
-//                     rowText += " ,";
-//                     continue;
-//                 }
-//                 rowText += gameBoard[i][o] + ",";
-//             }
-//             console.log(rowText + "]");
-//             rowText = "[";
-//         }
-//     }
+    getTies() {
+        return this.#ties;
+    }
 
-//     const placeTile = (player, x, y) => {
-//         gameBoard[x][y] = `${player.getTileType()}`;
-//         //printBoard();
-//     };
+    getGameOver() {
+        return this.#gameOver;
+    }
 
-//     const resetBoard = () => {
-//         gameBoard = [["", "", ""],
-//                     ["", "", ""],
-//                     ["", "", ""]];
-//     };
+    switchPlayerTurn() {
+        this.#activePlayer = this.#activePlayer === this.#player1 ? this.#player2 : this.#player1;
+    }
 
-//     return {getBoard, placeTile, printBoard, resetBoard}
-// })();
+    checkGameOver(x, y) {
+        // A win can only happen at the current move so check the current row, col
+        // and diagonal (both ways) for the a win
+        const player = this.getActivePlayer();
+        const board = this.#board.getBoard();
+        let tileType = player.getTileType();
+        let rowsNeededToWin = {count: 0, tiles: []};
+        let colsNeededToWin = {count: 0, tiles: []};
+        let diagsNeededToWin = {count: 0, tiles: []};
+        let reverseDiagsNeededToWin = {count: 0, tiles: []};
+        const boardLength = board.length;
+        for (let i = 0; i < boardLength; i++) {
+            if (board[x][i] == tileType) {
+                rowsNeededToWin.count++;
+                rowsNeededToWin.tiles.push([x, i]);
+            }
+            if (board[i][y] == tileType) {
+                colsNeededToWin.count++;
+                colsNeededToWin.tiles.push([i, y]);
+            } 
+            if (board[i][i] == tileType) {
+                diagsNeededToWin.count++;
+                diagsNeededToWin.tiles.push([i, i]);
+            }
+            if (board[i][boardLength - 1 - i] == tileType) {
+                reverseDiagsNeededToWin.count++;
+                reverseDiagsNeededToWin.tiles.push([i, boardLength - 1 - i]);
+            }
+        }
+        switch(boardLength) {
+            case rowsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: rowsNeededToWin.tiles};
+
+            case colsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: colsNeededToWin.tiles};
+
+            case diagsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: diagsNeededToWin.tiles};
+
+            case reverseDiagsNeededToWin.count:
+                player.incrementScore();
+                return {over: true, winner: player, winningTiles: reverseDiagsNeededToWin.tiles};
+        }
+        // If no player has won, but all 9 tiles are filled, it's a tie
+        let filledTiles = 0
+        for (let i = 0; i < boardLength; i++) {
+            for (let o = 0; o < boardLength; o++) {
+                if (board[i][o]) {
+                    filledTiles++;
+                }
+            }
+        }
+        if (filledTiles == 9) {
+            ties++;
+            return {over: true, winner: "tie", winningTiles: ""};
+        } 
+        return {over: false, winner: "none", winningTiles: ""};
+    }
+
+    nextRound() {
+        this.#activePlayer = this.#player1;
+        this.#board.resetBoard();
+        this.#gameOver = {
+            over: false,
+            winner: "none",
+        }
+    }
+
+    resetGame() {
+        this.nextRound();
+        this.#player1.resetScore();
+        this.#player2.resetScore();
+        this.#ties = 0;
+    }
+
+    playRound(x, y) {
+        this.#board.placeTile(this.getActivePlayer(), x, y);
+        this.#gameOver = this.checkGameOver(x, y);
+        this.switchPlayerTurn();
+    }
+
+}
+
+const controller = new gameControllerClass();
+controller.playRound(0,2);
+controller.playRound(0,1);
+controller.playRound(1,1);
+controller.playRound(0,0);
+controller.playRound(2,0);
+console.log(controller.getGameOver());
+
 
 const gameController = (function() {
 
