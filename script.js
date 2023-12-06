@@ -201,12 +201,12 @@ const displayController = (function() {
             setTimeout(() => {
                 if (winningPlayer != "tie") {
                     const winnerIcon = document.querySelector(".winnerIcon");
-                    const nextRoundButton = document.querySelector(".nextRoundButton");
                     winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
-                    nextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
+                    modalNextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
                     ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
                     gameOverModal.classList.add("showModal");
                 } else {
+                    modalNextRoundButtonTie.style.backgroundColor = "rgb(42, 65, 76)";
                     gameOverTieModal.classList.add("showModal");
                 }
             }, 500);
