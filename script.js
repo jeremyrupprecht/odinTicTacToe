@@ -67,7 +67,7 @@ class GameBoard {
     } 
 }
 
-class gameControllerClass {
+class GameController {
     #player1 = new Player("X");
     #player2 = new Player("O");
     #board = new GameBoard();
@@ -151,7 +151,7 @@ class gameControllerClass {
             }
         }
         if (filledTiles == 9) {
-            ties++;
+            this.#ties++;
             return {over: true, winner: "tie", winningTiles: ""};
         } 
         return {over: false, winner: "none", winningTiles: ""};
@@ -178,124 +178,116 @@ class gameControllerClass {
         this.#gameOver = this.checkGameOver(x, y);
         this.switchPlayerTurn();
     }
-
 }
 
-const controller = new gameControllerClass();
-controller.playRound(0,2);
-controller.playRound(0,1);
-controller.playRound(1,1);
-controller.playRound(0,0);
-controller.playRound(2,0);
-console.log(controller.getGameOver());
+// const gameController = (function() {
 
+//     const player1 = new Player("X");
+//     const player2 = new Player("O");
+//     const board = new GameBoard();
 
-const gameController = (function() {
+//     let activePlayer = player1;
+//     let ties = 0;
+//     let gameOver = {
+//         over: false,
+//         winner: "none",
+//         winningTiles: [],
+//     }
 
-    const player1 = new Player("X");
-    const player2 = new Player("O");
-    const board = new GameBoard();
+//     const getActivePlayer = () => activePlayer;
+//     const getTies = () => ties;
+//     const getGameOver = () => gameOver;
+//     const switchPlayerTurn = () => {
+//         activePlayer = activePlayer === player1 ? player2 : player1;
+//     }
 
-    let activePlayer = player1;
-    let ties = 0;
-    let gameOver = {
-        over: false,
-        winner: "none",
-        winningTiles: [],
-    }
+//     const checkGameOver = (board, x, y, player) => {
+//         // A win can only happen at the current move so check the current row, col
+//         // and diagonal (both ways) for the a win
+//         let tileType = player.getTileType();
+//         let rowsNeededToWin = {count: 0, tiles: []};
+//         let colsNeededToWin = {count: 0, tiles: []};
+//         let diagsNeededToWin = {count: 0, tiles: []};
+//         let reverseDiagsNeededToWin = {count: 0, tiles: []};
+//         let boardLength = board.length;
+//         for (let i = 0; i < boardLength; i++) {
+//             if (board[x][i] == tileType) {
+//                 rowsNeededToWin.count++;
+//                 rowsNeededToWin.tiles.push([x, i]);
+//             }
+//             if (board[i][y] == tileType) {
+//                 colsNeededToWin.count++;
+//                 colsNeededToWin.tiles.push([i, y]);
+//             } 
+//             if (board[i][i] == tileType) {
+//                 diagsNeededToWin.count++;
+//                 diagsNeededToWin.tiles.push([i, i]);
+//             }
+//             if (board[i][boardLength - 1 - i] == tileType) {
+//                 reverseDiagsNeededToWin.count++;
+//                 reverseDiagsNeededToWin.tiles.push([i, boardLength - 1 - i]);
+//             }
+//         }
+//         switch(boardLength) {
+//             case rowsNeededToWin.count:
+//                 player.incrementScore();
+//                 return {over: true, winner: player, winningTiles: rowsNeededToWin.tiles};
 
-    const getActivePlayer = () => activePlayer;
-    const getTies = () => ties;
-    const getGameOver = () => gameOver;
-    const switchPlayerTurn = () => {
-        activePlayer = activePlayer === player1 ? player2 : player1;
-    }
+//             case colsNeededToWin.count:
+//                 player.incrementScore();
+//                 return {over: true, winner: player, winningTiles: colsNeededToWin.tiles};
 
-    const checkGameOver = (board, x, y, player) => {
-        // A win can only happen at the current move so check the current row, col
-        // and diagonal (both ways) for the a win
-        let tileType = player.getTileType();
-        let rowsNeededToWin = {count: 0, tiles: []};
-        let colsNeededToWin = {count: 0, tiles: []};
-        let diagsNeededToWin = {count: 0, tiles: []};
-        let reverseDiagsNeededToWin = {count: 0, tiles: []};
-        let boardLength = board.length;
-        for (let i = 0; i < boardLength; i++) {
-            if (board[x][i] == tileType) {
-                rowsNeededToWin.count++;
-                rowsNeededToWin.tiles.push([x, i]);
-            }
-            if (board[i][y] == tileType) {
-                colsNeededToWin.count++;
-                colsNeededToWin.tiles.push([i, y]);
-            } 
-            if (board[i][i] == tileType) {
-                diagsNeededToWin.count++;
-                diagsNeededToWin.tiles.push([i, i]);
-            }
-            if (board[i][boardLength - 1 - i] == tileType) {
-                reverseDiagsNeededToWin.count++;
-                reverseDiagsNeededToWin.tiles.push([i, boardLength - 1 - i]);
-            }
-        }
-        switch(boardLength) {
-            case rowsNeededToWin.count:
-                player.incrementScore();
-                return {over: true, winner: player, winningTiles: rowsNeededToWin.tiles};
+//             case diagsNeededToWin.count:
+//                 player.incrementScore();
+//                 return {over: true, winner: player, winningTiles: diagsNeededToWin.tiles};
 
-            case colsNeededToWin.count:
-                player.incrementScore();
-                return {over: true, winner: player, winningTiles: colsNeededToWin.tiles};
+//             case reverseDiagsNeededToWin.count:
+//                 player.incrementScore();
+//                 return {over: true, winner: player, winningTiles: reverseDiagsNeededToWin.tiles};
+//         }
+//         // If no player has won, but all 9 tiles are filled, it's a tie
+//         let filledTiles = 0
+//         for (let i = 0; i < boardLength; i++) {
+//             for (let o = 0; o < boardLength; o++) {
+//                 if (board[i][o]) {
+//                     filledTiles++;
+//                 }
+//             }
+//         }
+//         if (filledTiles == 9) {
+//             ties++;
+//             return {over: true, winner: "tie", winningTiles: ""};
+//         } 
+//         return {over: false, winner: "none", winningTiles: ""};
+//     };
 
-            case diagsNeededToWin.count:
-                player.incrementScore();
-                return {over: true, winner: player, winningTiles: diagsNeededToWin.tiles};
+//     const nextRound = () => {
+//         activePlayer = player1;
+//         board.resetBoard();
+//         gameOver = {
+//             over: false,
+//             winner: "none",
+//         }
+//     }
 
-            case reverseDiagsNeededToWin.count:
-                player.incrementScore();
-                return {over: true, winner: player, winningTiles: reverseDiagsNeededToWin.tiles};
-        }
-        // If no player has won, but all 9 tiles are filled, it's a tie
-        let filledTiles = 0
-        for (let i = 0; i < boardLength; i++) {
-            for (let o = 0; o < boardLength; o++) {
-                if (board[i][o]) {
-                    filledTiles++;
-                }
-            }
-        }
-        if (filledTiles == 9) {
-            ties++;
-            return {over: true, winner: "tie", winningTiles: ""};
-        } 
-        return {over: false, winner: "none", winningTiles: ""};
-    };
+//     const resetGame = () => {
+//         nextRound();
+//         player1.resetScore();
+//         player2.resetScore();
+//         ties = 0;
+//     }
 
-    const nextRound = () => {
-        activePlayer = player1;
-        board.resetBoard();
-        gameOver = {
-            over: false,
-            winner: "none",
-        }
-    }
-
-    const resetGame = () => {
-        nextRound();
-        player1.resetScore();
-        player2.resetScore();
-        ties = 0;
-    }
-
-    const playRound = (x, y) => {
-        board.placeTile(getActivePlayer(), x, y);
-        gameOver = checkGameOver(board.getBoard(), x, y, getActivePlayer());
-        switchPlayerTurn();
-    }
-    return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
-})();
+//     const playRound = (x, y) => {
+//         board.placeTile(getActivePlayer(), x, y);
+//         gameOver = checkGameOver(board.getBoard(), x, y, getActivePlayer());
+//         switchPlayerTurn();
+//     }
+//     return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
+// })();
 
 const displayController = (function() {
+
+    const gameController = new GameController();
 
     const playerTurnImage = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
