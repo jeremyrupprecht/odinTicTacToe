@@ -180,115 +180,55 @@ class GameController {
     }
 }
 
-// const gameController = (function() {
+class DisplayController {
+    #gameController = new GameController();
+    #playerTurnImage = document.querySelector(".turnImg");
+    #boardDiv = document.querySelector(".boardGrid");
+    #pageResetButton = document.querySelector(".resetButton");
+    #gameOverModal = document.querySelector(".gameOverModal");
+    #gameOverTieModal = document.querySelector(".gameOverTieModal");
+    #modalResetButton = document.querySelector(".modalResetButton");
+    #modalNextRoundButton = document.querySelector(".nextRoundButton");
+    #modalResetButtonTie = document.querySelector(".modalResetButtonTie");
+    #modalNextRoundButtonTie = document.querySelector(".nextRoundButtonTie");
 
-//     const player1 = new Player("X");
-//     const player2 = new Player("O");
-//     const board = new GameBoard();
+    hoverOverBoardTile = (event) => {
+        const tileImage = event.currentTarget.firstElementChild;
+        if (this.#gameController.getActivePlayer().getTileType() == "X") {
+            tileImage.src = "images/XUnfilled.svg";
+        } else {
+            tileImage.src = "images/OUnfilled.svg";
+        }
+    }
 
-//     let activePlayer = player1;
-//     let ties = 0;
-//     let gameOver = {
-//         over: false,
-//         winner: "none",
-//         winningTiles: [],
-//     }
+    hoverOutOfBoardTile = (event) => {
+        const tileImage = event.currentTarget.firstElementChild;
+        tileImage.src = "";
+    }
 
-//     const getActivePlayer = () => activePlayer;
-//     const getTies = () => ties;
-//     const getGameOver = () => gameOver;
-//     const switchPlayerTurn = () => {
-//         activePlayer = activePlayer === player1 ? player2 : player1;
-//     }
+    setupListeners() {
+        const gridTiles = Array.from(this.#boardDiv.children);
+        gridTiles.forEach(tile => {
+            // tile.addEventListener("click", clickBoardTile);
+            tile.addEventListener("mouseenter", this.hoverOverBoardTile);
+            tile.addEventListener("mouseout", this.hoverOutOfBoardTile);
+        })
+        // pageResetButton.addEventListener("click", goToNextRound);
+        // modalResetButton.addEventListener("click", resetGame);
+        // modalNextRoundButton.addEventListener("click", goToNextRound);
+        // modalResetButtonTie.addEventListener("click", resetGame)
+        // modalNextRoundButtonTie.addEventListener("click",goToNextRound);
+    }
 
-//     const checkGameOver = (board, x, y, player) => {
-//         // A win can only happen at the current move so check the current row, col
-//         // and diagonal (both ways) for the a win
-//         let tileType = player.getTileType();
-//         let rowsNeededToWin = {count: 0, tiles: []};
-//         let colsNeededToWin = {count: 0, tiles: []};
-//         let diagsNeededToWin = {count: 0, tiles: []};
-//         let reverseDiagsNeededToWin = {count: 0, tiles: []};
-//         let boardLength = board.length;
-//         for (let i = 0; i < boardLength; i++) {
-//             if (board[x][i] == tileType) {
-//                 rowsNeededToWin.count++;
-//                 rowsNeededToWin.tiles.push([x, i]);
-//             }
-//             if (board[i][y] == tileType) {
-//                 colsNeededToWin.count++;
-//                 colsNeededToWin.tiles.push([i, y]);
-//             } 
-//             if (board[i][i] == tileType) {
-//                 diagsNeededToWin.count++;
-//                 diagsNeededToWin.tiles.push([i, i]);
-//             }
-//             if (board[i][boardLength - 1 - i] == tileType) {
-//                 reverseDiagsNeededToWin.count++;
-//                 reverseDiagsNeededToWin.tiles.push([i, boardLength - 1 - i]);
-//             }
-//         }
-//         switch(boardLength) {
-//             case rowsNeededToWin.count:
-//                 player.incrementScore();
-//                 return {over: true, winner: player, winningTiles: rowsNeededToWin.tiles};
+}
 
-//             case colsNeededToWin.count:
-//                 player.incrementScore();
-//                 return {over: true, winner: player, winningTiles: colsNeededToWin.tiles};
+const display = new DisplayController();
+display.setupListeners();
 
-//             case diagsNeededToWin.count:
-//                 player.incrementScore();
-//                 return {over: true, winner: player, winningTiles: diagsNeededToWin.tiles};
-
-//             case reverseDiagsNeededToWin.count:
-//                 player.incrementScore();
-//                 return {over: true, winner: player, winningTiles: reverseDiagsNeededToWin.tiles};
-//         }
-//         // If no player has won, but all 9 tiles are filled, it's a tie
-//         let filledTiles = 0
-//         for (let i = 0; i < boardLength; i++) {
-//             for (let o = 0; o < boardLength; o++) {
-//                 if (board[i][o]) {
-//                     filledTiles++;
-//                 }
-//             }
-//         }
-//         if (filledTiles == 9) {
-//             ties++;
-//             return {over: true, winner: "tie", winningTiles: ""};
-//         } 
-//         return {over: false, winner: "none", winningTiles: ""};
-//     };
-
-//     const nextRound = () => {
-//         activePlayer = player1;
-//         board.resetBoard();
-//         gameOver = {
-//             over: false,
-//             winner: "none",
-//         }
-//     }
-
-//     const resetGame = () => {
-//         nextRound();
-//         player1.resetScore();
-//         player2.resetScore();
-//         ties = 0;
-//     }
-
-//     const playRound = (x, y) => {
-//         board.placeTile(getActivePlayer(), x, y);
-//         gameOver = checkGameOver(board.getBoard(), x, y, getActivePlayer());
-//         switchPlayerTurn();
-//     }
-//     return {getActivePlayer, getTies, getGameOver, playRound, nextRound, resetGame};
-// })();
-
+/*
 const displayController = (function() {
 
     const gameController = new GameController();
-
     const playerTurnImage = document.querySelector(".turnImg");
     const boardDiv = document.querySelector(".boardGrid");
     const pageResetButton = document.querySelector(".resetButton");
@@ -428,3 +368,4 @@ const displayController = (function() {
     return {setupListeners}
 })();
 displayController.setupListeners();
+*/
