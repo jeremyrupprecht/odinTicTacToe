@@ -41,7 +41,6 @@ class GameBoard {
     printBoard() {
         let rowText = "["
         let board = this.getBoard();
-        console.log("HEY", JSON.stringify(board));
         for(let i = 0; i < board.length; i++) {
             for(let o = 0; o < board[i].length; o++) {
                 if (!board[i][o]) {
@@ -192,6 +191,83 @@ class DisplayController {
     #modalResetButtonTie = document.querySelector(".modalResetButtonTie");
     #modalNextRoundButtonTie = document.querySelector(".nextRoundButtonTie");
 
+    updateScreen = (tile) => {
+        // Place the opposing tile of the active player as the active player
+        // is switched at the end playRound();
+        const tileImage = tile.firstElementChild;
+        if (this.#gameController.getActivePlayer().getTileType() == "X") {
+            tileImage.src = "images/OFilled.svg";
+            this.#playerTurnImage.src = "images/XGray.svg";
+        } else {
+            tileImage.src = "images/XFilled.svg";
+            this.#playerTurnImage.src = "images/OGray.svg";
+        }
+
+        if (this.#gameController.getGameOver().over) {
+
+            // Update player score
+            const winningPlayer = this.#gameController.getGameOver().winner;
+            if (winningPlayer != "tie") {
+                const winningPlayerScoreDiv = document.querySelector(`.${winningPlayer.getTileType()}score`);
+                winningPlayerScoreDiv.textContent = winningPlayer.getScore();
+            } else {
+                const tieScoreDiv = document.querySelector(".tiesScore");
+                tieScoreDiv.textContent = this.#gameController.getTies();
+            }
+
+            // If there's no tie, highlight winning tiles (a row, col or diagonal)
+            // so the player knows they he/she won
+            let numWinningTiles = this.#gameController.getGameOver().winningTiles.length;
+            if (numWinningTiles) {
+                for (let i = 0; i < numWinningTiles; i++) {
+                    let x = this.#gameController.getGameOver().winningTiles[i][0];
+                    let y = this.#gameController.getGameOver().winningTiles[i][1];
+                    const tileDiv = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                    const tileDivImg = tileDiv.firstElementChild;
+                    tileDiv.style.backgroundColor = winningPlayer.getTileType() == "X"
+                    ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                    tileDivImg.src = `images/${winningPlayer.getTileType()}White.svg`;
+                }
+            } 
+
+            // Render game over modal
+            setTimeout(() => {
+                if (winningPlayer != "tie") {
+                    const winnerIcon = document.querySelector(".winnerIcon");
+                    winnerIcon.src = `images/${winningPlayer.getTileType()}Filled.svg`;
+                    this.#modalNextRoundButton.style.backgroundColor = winningPlayer.getTileType() == "X" 
+                    ? "rgb(29, 160, 156)" : "rgb(173, 111, 0)";
+                    this.#gameOverModal.classList.add("showModal");
+                } else {
+                    this.#modalNextRoundButtonTie.style.backgroundColor = "rgb(42, 65, 76)";
+                    this.#gameOverTieModal.classList.add("showModal");
+                }
+            }, 500);
+        }
+    }    
+
+    clickBoardTile = (event) => {
+        const tile = event.currentTarget;
+        this.#gameController.playRound(tile.dataset.x, tile.dataset.y);
+
+        if (this.#gameController.getGameOver().over) {
+            // Disable remaining tiles so the player cannot click them
+            // while the game over modal is active
+            const gridTiles = Array.from(this.#boardDiv.children);
+            gridTiles.forEach(gTile => {
+                gTile.removeEventListener("click", this.clickBoardTile);
+                gTile.removeEventListener("mouseenter", this.hoverOverBoardTile);
+                gTile.removeEventListener("mouseout", this.hoverOutOfBoardTile);
+            })
+        }
+
+        // Prevent players from filling in tiles that are already taken
+        tile.removeEventListener("click", this.clickBoardTile);
+        tile.removeEventListener("mouseenter", this.hoverOverBoardTile);
+        tile.removeEventListener("mouseout", this.hoverOutOfBoardTile);
+        this.updateScreen(tile);
+    }
+
     hoverOverBoardTile = (event) => {
         const tileImage = event.currentTarget.firstElementChild;
         if (this.#gameController.getActivePlayer().getTileType() == "X") {
@@ -206,18 +282,43 @@ class DisplayController {
         tileImage.src = "";
     }
 
+    goToNextRound = () => {
+        this.#gameController.nextRound();
+        this.#playerTurnImage.src = "images/XGray.svg";
+        const gridTiles = Array.from(this.#boardDiv.children);
+        gridTiles.forEach(tile => {
+            tile.style.backgroundColor = "#081e28";
+            const tileImage = tile.firstElementChild;
+            tileImage.src = "";
+        })
+        this.#gameOverModal.classList.remove("showModal");
+        this.#gameOverTieModal.classList.remove("showModal");
+        this.setupListeners();
+    }
+
+    // Resetting the game is identical to going to the next round but the player
+    // scores are reset as well
+    resetGame = () => {
+        this.goToNextRound();
+        this.#gameController.resetGame();
+        const scores = Array.from(document.querySelectorAll(".score"));
+        scores.forEach(score => {
+            score.textContent = 0;
+        });
+    }
+
     setupListeners() {
         const gridTiles = Array.from(this.#boardDiv.children);
         gridTiles.forEach(tile => {
-            // tile.addEventListener("click", clickBoardTile);
+            tile.addEventListener("click", this.clickBoardTile);
             tile.addEventListener("mouseenter", this.hoverOverBoardTile);
             tile.addEventListener("mouseout", this.hoverOutOfBoardTile);
         })
-        // pageResetButton.addEventListener("click", goToNextRound);
-        // modalResetButton.addEventListener("click", resetGame);
-        // modalNextRoundButton.addEventListener("click", goToNextRound);
-        // modalResetButtonTie.addEventListener("click", resetGame)
-        // modalNextRoundButtonTie.addEventListener("click",goToNextRound);
+        this.#pageResetButton.addEventListener("click", this.goToNextRound);
+        this.#modalResetButton.addEventListener("click", this.resetGame);
+        this.#modalNextRoundButton.addEventListener("click", this.goToNextRound);
+        this.#modalResetButtonTie.addEventListener("click", this.resetGame)
+        this.#modalNextRoundButtonTie.addEventListener("click", this.goToNextRound);
     }
 
 }
